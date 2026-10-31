@@ -180,6 +180,11 @@ rosso se `r>150 && r>g+b`, nero se la luminosità media `< 120`, altrimenti bian
 L'ESP32 genera il contenuto e lo invia: orologio, contatori, dati da
 sensori collegati. Semplice, nessuna infrastruttura.
 
+### A2. Direttamente dal computer, senza ESP32
+Un Mac (o un PC) con Bluetooth LE vicino al tag lo scrive direttamente: vedi
+`mac/` e la sezione 10. Per prove, uso al banco, o una postazione fissa a
+pochi metri dai tag.
+
 ### B. Gateway BLE in rete (consigliato per casa e industria)
 L'ESP32 fa solo da ponte tra rete e BLE; il contenuto lo genera un server.
 
@@ -268,8 +273,9 @@ leggibili alla risoluzione del tag [non verificato].
 | `esl_clock/` | Rendering con GFX, ora da seriale (`T<epoch>\n`), aggiornamento periodico |
 | `esl_poster/` | Grafica complessa: dithering Bayer, primitive, testo con contorno, invio singolo |
 | `esl_logo/` | Immagine precalcolata in un header più `logo2esl.py` (immagine qualsiasi → `logo_frame.h` + anteprima PNG) |
+| `mac/` | `esl_send.py`: invio diretto dal computer con Python e `bleak`, senza ESP32 |
 
-Tutti contengono le stesse funzioni da riusare: `request()` (scrive e aspetta
+Gli sketch ESP32 contengono le stesse funzioni da riusare: `request()` (scrive e aspetta
 la notify con timeout), `sendFrame()` (protocollo della sezione 3),
 `updateTag()` (scansione → connessione → invio → disconnessione).
 
@@ -280,3 +286,30 @@ python3 logo2esl.py <immagine> logo_frame.h anteprima.png
 Ritaglia sul contenuto, scala con margini (alto 6, basso 22, lati 8 px) e
 produce il frame nel formato della sezione 4. Si può riusare lato server
 nell'architettura B, inviando il `bytearray` invece di scrivere l'header.
+
+---
+
+## 10. Scrivere dal computer senza ESP32 (`mac/`)
+
+`mac/esl_send.py` implementa lo stesso protocollo (sezione 3) e lo stesso
+formato (sezione 4) con la libreria Python `bleak`. Converte qualsiasi
+immagine in 400×300 a tre colori e la invia.
+
+```sh
+pip install -r mac/requirements.txt          # bleak, pillow
+python3 mac/esl_send.py NEMR94205569 immagine.png
+python3 mac/esl_send.py NEMR94205569 --demo   # schermata di prova con l'ora
+```
+
+- **Verificato su macOS:** MTU 247, blockSize 244, 30400 byte in **~8 s**
+  (più veloce dell'ESP32-C3).
+- Su macOS l'indirizzo BLE non è visibile (CoreBluetooth mostra un UUID per
+  dispositivo): il tag si cerca per **nome** (`NEMR` + ID).
+- La pausa di 300 ms dopo l'abilitazione delle notify serve anche qui.
+- La prima esecuzione può far comparire la richiesta del permesso Bluetooth
+  per il Terminale (Impostazioni → Privacy e sicurezza → Bluetooth).
+- `bleak` funziona anche su Linux (BlueZ) e Windows, ma lì lo script non è
+  stato provato e la modalità `--demo` usa un font di macOS [non verificato].
+- L'immagine viene ridimensionata a 400×300 senza mantenere le proporzioni:
+  preparare le immagini già in 4:3, oppure passare da `esl_logo/logo2esl.py`
+  per centrarle con i margini.
