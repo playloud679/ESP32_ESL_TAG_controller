@@ -230,6 +230,10 @@ aggiornamenti vanno in coda e si fanno uno alla volta.
 - Mettere sempre sul tag l'**ora dell'ultimo aggiornamento**: un e-paper fermo
   sembra aggiornato anche quando non lo è.
 - Lasciare qualche pixel di margine ai bordi: la cornice copre un po' l'area utile.
+- **Serve luce ambientale.** L'e-paper è riflettente e non ha retroilluminazione:
+  con poca luce il rosso diventa scuro, quasi bordeaux, e il contrasto cala. In
+  ambienti poco illuminati preferire il nero su bianco per le informazioni
+  importanti e usare il rosso come accento.
 - Preparare i layout in anteprima sul PC (Pillow, o la stessa logica GFX
   compilata per il computer) prima di inviarli: ogni prova sul tag costa ~30 s.
 
@@ -251,6 +255,11 @@ leggibili alla risoluzione del tag [non verificato].
 
 ## 8. Batteria e affidabilità
 
+- **Colori spenti?** Prima di sospettare batteria, dati o firmware, guardare
+  il tag con più luce: in un caso reale il rosso "spento" era solo poca luce
+  ambientale e con più lux è tornato brillante (tensione invariata a 3,0 V,
+  formato dei dati identico). Altri fattori possibili sono il freddo e molti
+  aggiornamenti ravvicinati [non verificato su questo modello].
 - Il consumo dipende dal numero di aggiornamenti: **ridurli al minimo**,
   inviando solo quando il contenuto cambia davvero (confrontare un hash del
   frame con l'ultimo inviato).
