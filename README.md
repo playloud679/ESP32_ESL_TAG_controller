@@ -1,4 +1,4 @@
-# esl-nemr-esp32
+# ESP32_ESL_TAG_controller
 
 Pilotare i cartellini ESL NEMR 400×300 BWR via BLE con ESP32.
 
